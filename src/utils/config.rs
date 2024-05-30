@@ -7,14 +7,6 @@ use toml;
 pub struct Config {
     pub name: String,
     pub activity: String
-    // assets: Assets,
-}
-
-#[derive(Deserialize)]
-pub struct Assets {
-    // base_folder: String,
-    // logo: String,
-    // banner: String,
 }
 
 pub fn load_config() -> Result<Config, Box<dyn Error>> {
