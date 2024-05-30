@@ -1,0 +1,13 @@
+use poise::serenity_prelude::*;
+
+use crate::Context;
+use crate::Error;
+
+#[poise::command(slash_command)]
+pub async fn name(
+    ctx: Context<'_>,
+) -> Result<(), Error> {
+    // TODO: - Do stuff
+
+    Ok(())
+}
