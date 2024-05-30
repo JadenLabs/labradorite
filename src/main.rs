@@ -6,30 +6,13 @@ use poise::serenity_prelude::*;
 mod core;
 mod utils;
 
-struct Data {} // User data, which is stored and accessible in all command invocations
-type Error = Box<dyn std::error::Error + Send + Sync>;
-type Context<'a> = poise::Context<'a, Data, Error>;
-
-/// Displays your or another user's account creation date
-#[poise::command(slash_command, prefix_command)]
-async fn age(
-    ctx: Context<'_>,
-    #[description = "Selected user"] user: Option<serenity::User>,
-) -> Result<(), Error> {
-    let u = user.as_ref().unwrap_or_else(|| ctx.author());
-    let response = format!(
-        "{}'s account was created at <t:{}:F>",
-        u.name,
-        u.created_at().unix_timestamp()
-    );
-    ctx.say(response).await?;
-    Ok(())
-}
+pub struct Data {}
+pub type Error = Box<dyn std::error::Error + Send + Sync>;
+pub type Context<'a> = poise::Context<'a, Data, Error>;
 
 #[tokio::main]
 async fn main() {
-    // utils::log::setup_logging().expect("Failed to set up logger");
-
+    // Load config
     let config = utils::config::load_config().expect("Failed to load config");
     utils::logger::info(format!("Running {}", config.name).as_str());
 
@@ -45,7 +28,7 @@ async fn main() {
             event_handler: |ctx, event, framework, data| {
                 Box::pin(event_handler(ctx, event, framework, data))
             },
-            commands: vec![age()],
+            commands: vec![core::commands::age::age()],
             ..Default::default()
         })
         .setup(|ctx, _ready, framework| {
@@ -75,7 +58,9 @@ async fn event_handler(
     _data: &Data,
 ) -> Result<(), Error> {
     match event {
-        serenity::FullEvent::Ready { data_about_bot, .. } => core::events::ready::ready(ctx, event, data_about_bot),
+        serenity::FullEvent::Ready { data_about_bot, .. } => {
+            core::events::ready::ready(ctx, event, data_about_bot)
+        }
         _ => {}
     }
     Ok(())
