@@ -28,7 +28,11 @@ async fn main() {
             event_handler: |ctx, event, framework, data| {
                 Box::pin(event_handler(ctx, event, framework, data))
             },
-            commands: vec![core::commands::age::age()],
+            // * Commands go here
+            commands: vec![
+                core::commands::age::age(),
+                core::commands::ping::ping()
+                ],
             ..Default::default()
         })
         .setup(|ctx, _ready, framework| {

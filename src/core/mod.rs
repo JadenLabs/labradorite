@@ -1,5 +1,6 @@
 pub mod commands {
     pub mod age;
+    pub mod ping;
 }
 
 pub mod events {
