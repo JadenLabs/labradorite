@@ -1,3 +1,5 @@
+![LabraHeader](https://github.com/JadenLabs/labradorite/blob/master/assets/LabraHeader.png)
+
 **🚨 Disclaimer**
 
 This bot is still in development and will not be fully functional, use at your own discretion.
