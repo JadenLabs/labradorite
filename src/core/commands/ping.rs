@@ -1,7 +1,9 @@
 use chrono;
 
 use poise::serenity_prelude::*;
+use poise::CreateReply;
 
+use crate::utils;
 use crate::Context;
 use crate::Error;
 
@@ -14,9 +16,15 @@ pub async fn ping(ctx: Context<'_>) -> Result<(), Error> {
     let latency = (time_now - time_invoked).abs();
     // println!("{} - {} = {}", time_now, time_invoked, latency);
 
-    ctx.say(format!("Pong! `{}ms`", latency))
-        .await
-        .expect("Failed to respond to ping command");
+    let config = utils::config::load_config().expect("Failed to load config");
+
+    let color_rgb = utils::colors::hex_to_rgb(config.colors.primary.as_str());
+    let embed_color = Color::from_rgb(color_rgb.0, color_rgb.1, color_rgb.2);
+    let embed = CreateEmbed::default()
+        .color(embed_color)
+        .description(format!("Pong! `{}ms`", latency));
+
+    ctx.send(CreateReply::default().embed(embed)).await?;
 
     Ok(())
 }
