@@ -1,12 +1,12 @@
 ![LabraHeader](https://github.com/JadenLabs/labradorite/blob/master/assets/LabraHeader.png)
 
-**🚨 Disclaimer**
+### Disclaimer
 
 This bot is still in development and will not be fully functional, use at your own discretion.
 
 ---
 
-# 📙 About
+# 📘 About
 
 I am creating this bot with the primary purpose of learning the Rust language.
 
