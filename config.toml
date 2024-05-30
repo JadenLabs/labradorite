@@ -1,0 +1,7 @@
+name = "Labradorite"
+activity = "🔹In rust we trust"
+
+[assets]
+base_folder = "./assets"
+logo = "LabraLogo.png"
+banner = "LabraBanner.png"
