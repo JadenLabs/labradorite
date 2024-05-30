@@ -1,6 +1,8 @@
-# 📕 Disclaimer
+**🚨 Disclaimer**
 
 This bot is still in development and will not be fully functional, use at your own discretion.
+
+---
 
 # 📙 About
 
@@ -13,4 +15,3 @@ There is no set goal for the bot; I plan to just add stuff as I experiment with 
 If find any issues with the bot feel free to open an issue describing the bug.
 
 Alternatively, feel free to message me on Discord @roc.py about the issue or just to talk.
-
