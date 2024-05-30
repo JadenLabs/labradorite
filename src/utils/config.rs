@@ -6,7 +6,14 @@ use toml;
 #[derive(Deserialize)]
 pub struct Config {
     pub name: String,
-    pub activity: String
+    pub activity: String,
+    pub colors: Colors,
+}
+
+#[derive(Deserialize)]
+pub struct Colors {
+    pub primary: String,
+    pub secondary: String,
 }
 
 pub fn load_config() -> Result<Config, Box<dyn Error>> {

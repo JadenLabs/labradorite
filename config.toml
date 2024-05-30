@@ -1,2 +1,6 @@
 name = "Labradorite"
 activity = "🔹In rust we trust"
+
+[colors]
+primary = "#0c81d0"
+secondary = "#46c531"
