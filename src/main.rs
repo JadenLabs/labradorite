@@ -31,8 +31,9 @@ async fn main() {
             // * Commands go here
             commands: vec![
                 core::commands::age::age(),
-                core::commands::ping::ping()
-                ],
+                core::commands::ping::ping(),
+                core::commands::info::info(),
+            ],
             ..Default::default()
         })
         .setup(|ctx, _ready, framework| {
@@ -64,7 +65,7 @@ async fn event_handler(
     match event {
         serenity::FullEvent::Ready { data_about_bot, .. } => {
             core::events::ready::ready(ctx, event, data_about_bot)
-        },
+        }
         serenity::FullEvent::InteractionCreate { interaction, .. } => {
             core::events::interaction::interaction_create(ctx, event, interaction)
         }
