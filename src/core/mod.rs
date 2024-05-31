@@ -5,4 +5,5 @@ pub mod commands {
 
 pub mod events {
     pub mod ready;
+    pub mod interaction;
 }
