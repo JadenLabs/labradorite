@@ -7,7 +7,7 @@ use crate::utils;
 use crate::Context;
 use crate::Error;
 
-/// Ping me!
+/// Pings the bot
 #[poise::command(slash_command)]
 pub async fn ping(ctx: Context<'_>) -> Result<(), Error> {
     let time_invoked = ctx.created_at().timestamp_millis();
@@ -22,7 +22,7 @@ pub async fn ping(ctx: Context<'_>) -> Result<(), Error> {
     let embed_color = Color::from_rgb(color_rgb.0, color_rgb.1, color_rgb.2);
     let embed = CreateEmbed::default()
         .color(embed_color)
-        .description(format!("Pong! `{}ms`", latency));
+        .description(format!("{} Pong! `{}ms`", config.emojis.network, latency));
 
     ctx.send(CreateReply::default().embed(embed)).await?;
 
