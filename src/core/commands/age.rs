@@ -17,5 +17,6 @@ pub async fn age(
         u.created_at().unix_timestamp()
     );
     ctx.say(response).await?;
+
     Ok(())
 }
