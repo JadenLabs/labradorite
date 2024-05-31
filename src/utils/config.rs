@@ -8,12 +8,22 @@ pub struct Config {
     pub name: String,
     pub activity: String,
     pub colors: Colors,
+    pub emojis: Emojis,
 }
 
 #[derive(Deserialize)]
 pub struct Colors {
     pub primary: String,
     pub secondary: String,
+}
+
+#[derive(Deserialize)]
+pub struct Emojis {
+    pub arr_r: String,
+    // pub chat: String,
+    // pub dns: String,
+    pub network: String,
+    // pub trend_up: String,
 }
 
 pub fn load_config() -> Result<Config, Box<dyn Error>> {

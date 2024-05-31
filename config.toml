@@ -4,3 +4,10 @@ activity = "🔹In rust we trust"
 [colors]
 primary = "#0c81d0"
 secondary = "#46c531"
+
+[emojis]
+arr_r = "<:arr_r:1245949630106042419>"
+chat = "<:chat:1245949631171526696>"
+dns = "<:dns:1245949632056397947>"
+network = "<:network:1245949633428197426>"
+trend_up = "<:trend_up:1245949634304671804>"
