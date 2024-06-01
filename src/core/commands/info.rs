@@ -8,7 +8,7 @@ use crate::Context;
 use crate::Error;
 
 /// Displays information about the server
-#[poise::command(slash_command)]
+#[poise::command(slash_command, subcommands("user"))]
 pub async fn info(ctx: Context<'_>) -> Result<(), Error> {
     // Load config
     let config = utils::config::load_config().expect("Failed to load config");
@@ -52,6 +52,7 @@ pub async fn info(ctx: Context<'_>) -> Result<(), Error> {
 **Members**: `{members}`
 **Channels**: `{channels}`
 **Roles**: `{roles}`
+**Emojis**: `{emojis}`
     "#,
         arr_w = config.emojis.arr_r,
         name = guild.name,
@@ -66,6 +67,7 @@ pub async fn info(ctx: Context<'_>) -> Result<(), Error> {
         members = guild.member_count,
         channels = guild.channels.len(),
         roles = guild.roles.len(),
+        emojis = guild.emojis.len(),
     );
 
     // Channel information
@@ -89,6 +91,15 @@ pub async fn info(ctx: Context<'_>) -> Result<(), Error> {
         other_count = other_count
     );
 
+    // Features
+    let fmt_features_vec: Vec<String> = guild
+        .features
+        .iter()
+        .map(|feature| format!("{} {}", config.emojis.arr_r, feature.to_lowercase()))
+        .collect();
+
+    let fmt_features = fmt_features_vec.join("\n");
+
     // Create embed
     let embed = CreateEmbed::default()
         .color(embed_color)
@@ -97,7 +108,54 @@ pub async fn info(ctx: Context<'_>) -> Result<(), Error> {
         .fields(vec![
             ("General", general_field, true),
             ("Channels", channel_field, true),
+            ("Features", fmt_features, false),
         ]);
+
+    // Send message
+    ctx.send(CreateReply::default().embed(embed)).await?;
+
+    Ok(())
+}
+
+/// Displays information about a user
+#[poise::command(slash_command)]
+pub async fn user(
+    ctx: Context<'_>,
+    #[description = "Target user"] user: Option<User>,
+) -> Result<(), Error> {
+    // Load config
+    let config = utils::config::load_config().expect("Failed to load config");
+
+    // Color
+    let color_rgb = utils::colors::hex_to_rgb(config.colors.primary.as_str());
+    let embed_color = Color::from_rgb(color_rgb.0, color_rgb.1, color_rgb.2);
+
+    // User information
+    let user = user.unwrap_or(ctx.author().clone());
+    let avatar = user.face();
+
+    // Description
+    let description = format!(
+        r#"
+**Username**: `{name}`
+{arr_w} ID: `{id}`
+{arr_w} Global: `{global}`
+**Created**: <t:{created_at}:D>
+**Bot**: `{is_bot}`
+    "#,
+        arr_w = config.emojis.arr_r,
+        name = user.name,
+        id = user.id,
+        global = user.global_name.clone().unwrap_or("None".to_string()),
+        created_at = user.created_at().unix_timestamp(),
+        is_bot = user.bot.to_string()
+    );
+
+    // Create embed
+    let embed = CreateEmbed::default()
+        .color(embed_color)
+        .thumbnail(avatar)
+        .description(description);
 
     // Send message
     ctx.send(CreateReply::default().embed(embed)).await?;
