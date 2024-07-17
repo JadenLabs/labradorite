@@ -1,26 +1,22 @@
 use dotenv::dotenv;
-
 use poise::serenity_prelude as serenity;
 use poise::serenity_prelude::*;
 
-mod core;
-mod utils;
-
-pub struct Data {}
-pub type Error = Box<dyn std::error::Error + Send + Sync>;
-pub type Context<'a> = poise::Context<'a, Data, Error>;
+use labradorite::core;
+use labradorite::prelude::*;
+use labradorite::{Data, Error};
 
 #[tokio::main]
 async fn main() {
     // Load config
-    let config = utils::config::load_config().expect("Failed to load config");
-    utils::logger::info(format!("Running {}", config.name).as_str());
+    let config = Config::load().expect("Failed to load config");
+    logger::info(format!("Running {}", config.name).as_str());
 
     // Login Details
     dotenv().ok();
     let token = std::env::var("DISCORD_TOKEN").expect("missing DISCORD_TOKEN");
     let intents = serenity::GatewayIntents::non_privileged();
-    utils::logger::info("Loaded config, token, and intents");
+    logger::info("Loaded config, token, and intents");
 
     // Framework loading
     let framework = poise::Framework::builder()
@@ -43,9 +39,18 @@ async fn main() {
             })
         })
         .build();
-    utils::logger::info(
-        format!("{} Commands loaded", &framework.options().commands.len()).as_str(),
-    );
+
+    let command_count = &framework.options().commands.len();
+    let commands_str: String = framework
+        .options()
+        .commands
+        .iter()
+        .map(|command| &command.name)
+        .cloned()
+        .collect::<Vec<String>>()
+        .join(", ");
+
+    logger::info(format!("{} Commands loaded: {}", command_count, commands_str).as_str());
 
     // Create client
     let mut client = serenity::ClientBuilder::new(token, intents)

@@ -1,58 +1,75 @@
-// use serde_json;
+use std::collections::HashMap;
 
+use crate::prelude::*;
+use crate::{Context, Error};
 use poise::serenity_prelude::*;
 use poise::CreateReply;
 
-use crate::utils;
-use crate::Context;
-use crate::Error;
+/// Displays information about the server
+#[poise::command(slash_command, subcommands("user", "server"))]
+pub async fn info(ctx: Context<'_>) -> Result<(), Error> {
+    // Embed
+    let config = Config::load().expect("Failed to load config");
+    let embed_color = config.colors.primary.to_color();
+    let description = format!(
+        r#"Labradorite is a multi-purpose bot made in rust using `Serenity` and `Poise`.
+
+I (`roc.py`) am creating this bot with the primary purpose of learning the Rust language.
+
+There is no set goal for the bot; I plan to just add stuff as I experiment with aspects of Rust.
+
+Github: {}
+    "#,
+        config.github
+    );
+
+    let embed = CreateEmbed::default()
+        .color(embed_color)
+        .title("About Labradorite")
+        .description(description);
+
+    // Respond
+    ctx.send(CreateReply::default().embed(embed)).await?;
+    Ok(())
+}
 
 /// Displays information about the server
-#[poise::command(slash_command, subcommands("user"))]
-pub async fn info(ctx: Context<'_>) -> Result<(), Error> {
+#[poise::command(slash_command)]
+pub async fn server(ctx: Context<'_>) -> Result<(), Error> {
     // Load config
-    let config = utils::config::load_config().expect("Failed to load config");
-
-    // Color
-    let color_rgb = utils::colors::hex_to_rgb(config.colors.primary.as_str());
-    let embed_color = Color::from_rgb(color_rgb.0, color_rgb.1, color_rgb.2);
+    let config = Config::load().expect("Failed to load config");
+    let embed_color = config.colors.primary.to_color();
 
     // Guild info
     let guild: Guild = ctx.guild().unwrap().clone();
     let guild_icon = guild.icon_url().unwrap_or("none".to_string());
 
-    // Channel info
-    let mut category_count = 0;
-    let mut forum_count = 0;
-    let mut news_count = 0;
-    let mut stage_count = 0;
-    let mut text_count = 0;
-    let mut voice_count = 0;
-    let mut other_count = 0;
+    let mut counts = HashMap::new();
+
     for (_channel_id, channel) in &guild.channels {
-        match channel.kind {
-            ChannelType::Category => category_count += 1,
-            ChannelType::Forum => forum_count += 1,
-            ChannelType::News => news_count += 1,
-            ChannelType::Stage => stage_count += 1,
-            ChannelType::Text => text_count += 1,
-            ChannelType::Voice => voice_count += 1,
-            _ => other_count += 1,
-        }
+        let counter = counts.entry(channel.kind).or_insert(0);
+        *counter += 1;
     }
+
+    let category_count = *counts.get(&ChannelType::Category).unwrap_or(&0);
+    let forum_count = *counts.get(&ChannelType::Forum).unwrap_or(&0);
+    let news_count = *counts.get(&ChannelType::News).unwrap_or(&0);
+    let stage_count = *counts.get(&ChannelType::Stage).unwrap_or(&0);
+    let text_count = *counts.get(&ChannelType::Text).unwrap_or(&0);
+    let voice_count = *counts.get(&ChannelType::Voice).unwrap_or(&0);
 
     // General information
     let general_field = format!(
         r#"
-**Name**: `{name}`
+Name: `{name}`
 {arr_w} ID: `{id}`
 {arr_w} Description:
 > `{description}`
-**Owner**: {owner}
-**Members**: `{members}`
-**Channels**: `{channels}`
-**Roles**: `{roles}`
-**Emojis**: `{emojis}`
+Owner: {owner}
+Members: `{members}`
+Channels: `{channels}`
+Roles: `{roles}`
+Emojis: `{emojis}`
     "#,
         arr_w = config.emojis.arr_r,
         name = guild.name,
@@ -79,7 +96,6 @@ pub async fn info(ctx: Context<'_>) -> Result<(), Error> {
 {arr_w} Stages: `{stage_count}`
 {arr_w} Text: `{text_count}`
 {arr_w} Voice: `{voice_count}`
-{arr_w} Other: `{other_count}`
     "#,
         arr_w = config.emojis.arr_r,
         category_count = category_count,
@@ -88,7 +104,6 @@ pub async fn info(ctx: Context<'_>) -> Result<(), Error> {
         stage_count = stage_count,
         text_count = text_count,
         voice_count = voice_count,
-        other_count = other_count
     );
 
     // Features
@@ -113,7 +128,6 @@ pub async fn info(ctx: Context<'_>) -> Result<(), Error> {
 
     // Send message
     ctx.send(CreateReply::default().embed(embed)).await?;
-
     Ok(())
 }
 
@@ -124,11 +138,8 @@ pub async fn user(
     #[description = "Target user"] user: Option<User>,
 ) -> Result<(), Error> {
     // Load config
-    let config = utils::config::load_config().expect("Failed to load config");
-
-    // Color
-    let color_rgb = utils::colors::hex_to_rgb(config.colors.primary.as_str());
-    let embed_color = Color::from_rgb(color_rgb.0, color_rgb.1, color_rgb.2);
+    let config = Config::load().expect("Failed to load config");
+    let embed_color = config.colors.primary.to_color();
 
     // User information
     let user = user.unwrap_or(ctx.author().clone());
@@ -137,11 +148,11 @@ pub async fn user(
     // Description
     let description = format!(
         r#"
-**Username**: `{name}`
+Username: `{name}`
 {arr_w} ID: `{id}`
 {arr_w} Global: `{global}`
-**Created**: <t:{created_at}:D>
-**Bot**: `{is_bot}`
+Created: <t:{created_at}:D>
+Bot: `{is_bot}`
     "#,
         arr_w = config.emojis.arr_r,
         name = user.name,

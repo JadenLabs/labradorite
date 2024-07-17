@@ -1,5 +1,6 @@
 name = "Labradorite"
 activity = "🔹In rust we trust"
+github = "https://github.com/FluoriteDevs/labradorite"
 
 [colors]
 primary = "#0c81d0"

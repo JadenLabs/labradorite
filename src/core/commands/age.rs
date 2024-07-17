@@ -1,8 +1,7 @@
 use poise::serenity_prelude as serenity;
 use poise::serenity_prelude::*;
 
-use crate::Context;
-use crate::Error;
+use crate::{Context, Error};
 
 /// Displays a user's account creation date
 #[poise::command(slash_command)]
